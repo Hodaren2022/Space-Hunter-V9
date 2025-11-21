@@ -1,4 +1,106 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
 
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+App.tsx
+components/GameCanvas.tsx
+constants.ts
+index.html
+index.tsx
+metadata.json
+netlify.toml
+package.json
+README.md
+tsconfig.json
+types.ts
+utils/audio.ts
+utils/i18n.ts
+vite.config.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="App.tsx">
+import React from 'react';
+import { GameCanvas } from './components/GameCanvas';
+
+export default function App() {
+  return (
+    <div className="w-full h-screen bg-neutral-900 text-white overflow-hidden">
+      <GameCanvas />
+    </div>
+  );
+}
+</file>
+
+<file path="components/GameCanvas.tsx">
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { 
   GameState, Player, Enemy, Projectile, Particle, Gem, DamageNumber, Lightning, Mine, Point, DevSettings
@@ -63,12 +165,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
     
     const onTouchStart = (e: TouchEvent) => {
       const target = e.target as HTMLElement;
-      // Allow interactions with UI buttons/inputs and upgrade options
-      if (target.tagName === 'BUTTON' || 
-          target.closest('button') || 
-          target.tagName === 'INPUT' ||
-          target.closest('.upgrade-option') ||
-          target.closest('[data-upgrade]')) {
+      // Allow interactions with UI buttons/inputs
+      if (target.tagName === 'BUTTON' || target.closest('button') || target.tagName === 'INPUT') {
         return;
       }
       
@@ -1113,10 +1211,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
     gameState.current.isPaused = false;
     gameState.current.isRunning = true;
     
-    // Reset camera to center on player
-    gameState.current.camX = 0;
-    gameState.current.camY = 0;
-    
     setUiState(prev => ({ ...prev, isGameOver: false, isRunning: true, time: "00:00" }));
     
     if (timerRef.current) clearInterval(timerRef.current);
@@ -1285,223 +1379,83 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
 
   return (
     <div ref={containerRef} 
-         style={{
-           position: 'relative',
-           width: '100%',
-           height: '100vh',
-           fontFamily: 'Orbitron, monospace',
-           touchAction: 'none'
-         }}>
+         className="relative w-full h-full font-[Orbitron] touch-none">
       
-      <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+      <canvas ref={canvasRef} className="block w-full h-full" />
 
       {/* Tech Corners */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '64px',
-        height: '64px',
-        borderTop: '4px solid #00f3ff',
-        borderLeft: '4px solid #00f3ff',
-        pointerEvents: 'none',
-        opacity: 0.5
-      }}></div>
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        width: '64px',
-        height: '64px',
-        borderTop: '4px solid #00f3ff',
-        borderRight: '4px solid #00f3ff',
-        pointerEvents: 'none',
-        opacity: 0.5
-      }}></div>
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        width: '64px',
-        height: '64px',
-        borderBottom: '4px solid #00f3ff',
-        borderLeft: '4px solid #00f3ff',
-        pointerEvents: 'none',
-        opacity: 0.5
-      }}></div>
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        width: '64px',
-        height: '64px',
-        borderBottom: '4px solid #00f3ff',
-        borderRight: '4px solid #00f3ff',
-        pointerEvents: 'none',
-        opacity: 0.5
-      }}></div>
+      <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-cyan-400 pointer-events-none opacity-50"></div>
+      <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-cyan-400 pointer-events-none opacity-50"></div>
+      <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-cyan-400 pointer-events-none opacity-50"></div>
+      <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-cyan-400 pointer-events-none opacity-50"></div>
 
       <button 
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          border: '1px solid #00f3ff',
-          color: '#00f3ff',
-          padding: '8px 16px',
-          zIndex: 50,
-          cursor: 'pointer'
-        }}
+        className="absolute top-5 right-5 bg-black/50 border border-cyan-500 text-cyan-400 px-4 py-2 rounded-none z-50 backdrop-blur-md hover:bg-cyan-900/50"
         onClick={() => setShowDev(!showDev)}
       >
         ⚙️
       </button>
 
       <button 
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '100px',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          border: '1px solid #666',
-          color: '#999',
-          padding: '8px 16px',
-          zIndex: 50,
-          cursor: 'pointer'
-        }}
+        className="absolute top-5 right-20 bg-black/50 border border-neutral-500 text-neutral-400 px-4 py-2 rounded-none z-50 backdrop-blur-md hover:text-white"
         onClick={toggleMute}
       >
         {isMuted ? '🔇' : '🔊'}
       </button>
 
       {showDev && (
-        <div style={{
-          position: 'absolute',
-          top: '80px',
-          right: '20px',
-          width: '320px',
-          backgroundColor: 'rgba(0, 0, 0, 0.9)',
-          border: '1px solid #00f3ff',
-          padding: '24px',
-          zIndex: 50,
-          fontSize: '14px',
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          color: 'white'
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottom: '1px solid #666',
-            paddingBottom: '12px',
-            marginBottom: '16px'
-          }}>
-             <h3 style={{
-               color: '#00f3ff',
-               fontWeight: 'bold',
-               textTransform: 'uppercase',
-               letterSpacing: '0.1em'
-             }}>設定控制台</h3>
-             <button onClick={() => setShowDev(false)} style={{
-               color: '#999',
-               backgroundColor: 'transparent',
-               border: 'none',
-               cursor: 'pointer',
-               fontSize: '16px'
-             }}>✕</button>
+        <div className="absolute top-20 right-5 w-80 bg-black/90 border border-cyan-500 p-6 z-50 text-sm shadow-[0_0_20px_rgba(0,243,255,0.2)] max-h-[80vh] overflow-y-auto">
+          <div className="flex justify-between items-center border-b border-neutral-700 pb-3 mb-4">
+             <h3 className="text-cyan-400 font-bold uppercase tracking-widest">{t('settings.dev_console', lang)}</h3>
+             <button onClick={() => setShowDev(false)} className="text-neutral-400 hover:text-white">✕</button>
           </div>
           
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              color: '#ccc',
-              marginBottom: '8px'
-            }}>
-               <span>語言</span>
+          <div className="mb-4">
+            <div className="flex justify-between text-neutral-300 mb-2">
+               <span>{t('settings.language', lang)}</span>
             </div>
-            <button onClick={toggleLang} style={{
-              width: '100%',
-              padding: '8px',
-              backgroundColor: '#1a1a1a',
-              border: '1px solid #0088aa',
-              color: '#00cccc',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}>
+            <button onClick={toggleLang} className="w-full py-2 bg-neutral-900 border border-cyan-800 hover:border-cyan-400 rounded-none text-cyan-300 font-bold">
                {lang === 'zh' ? '繁體中文' : 'English'}
             </button>
           </div>
 
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              color: '#ccc',
-              marginBottom: '4px'
-            }}>
-               <span>背景音樂</span>
-               <span style={{ color: '#00f3ff', fontFamily: 'monospace' }}>{Math.round(bgmVolume * 100)}%</span>
+          <div className="mb-4">
+            <div className="flex justify-between text-neutral-300 mb-1">
+               <span>{t('settings.bgm', lang)}</span>
+               <span className="text-cyan-400 font-mono">{Math.round(bgmVolume * 100)}%</span>
             </div>
             <input 
               type="range" min="0" max="1" step="0.05" 
               value={bgmVolume} 
               onChange={(e) => handleBgmChange(parseFloat(e.target.value))}
-              style={{
-                width: '100%',
-                height: '4px',
-                backgroundColor: '#333',
-                cursor: 'pointer'
-              }}
+              className="w-full accent-cyan-500 h-1 bg-neutral-800 rounded-none appearance-none cursor-pointer"
             />
           </div>
 
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              color: '#ccc',
-              marginBottom: '4px'
-            }}>
-               <span>音效</span>
-               <span style={{ color: '#00f3ff', fontFamily: 'monospace' }}>{Math.round(sfxVolume * 100)}%</span>
+          <div className="mb-4">
+            <div className="flex justify-between text-neutral-300 mb-1">
+               <span>{t('settings.sfx', lang)}</span>
+               <span className="text-cyan-400 font-mono">{Math.round(sfxVolume * 100)}%</span>
             </div>
             <input 
               type="range" min="0" max="1" step="0.05" 
               value={sfxVolume} 
               onChange={(e) => handleSfxChange(parseFloat(e.target.value))}
-              style={{
-                width: '100%',
-                height: '4px',
-                backgroundColor: '#333',
-                cursor: 'pointer'
-              }}
+              className="w-full accent-cyan-500 h-1 bg-neutral-800 rounded-none appearance-none cursor-pointer"
             />
           </div>
 
           {(['dmg', 'spd', 'frq', 'hp', 'mov', 'exp'] as const).map(k => (
-            <div key={k} style={{ marginBottom: '16px' }}>
-               <div style={{
-                 display: 'flex',
-                 justifyContent: 'space-between',
-                 color: '#ccc',
-                 marginBottom: '4px'
-               }}>
-                 <span>{k.toUpperCase()}</span>
-                 <span style={{ color: '#00f3ff', fontFamily: 'monospace' }}>x{devSettings[k].toFixed(1)}</span>
+            <div key={k} className="mb-4">
+               <div className="flex justify-between text-neutral-300 mb-1">
+                 <span>{t(`setting.${k}`, lang)}</span>
+                 <span className="text-cyan-400 font-mono">x{devSettings[k].toFixed(1)}</span>
                </div>
                <input 
                  type="range" min="0.5" max="6.0" step="0.1" 
                  value={devSettings[k]} 
                  onChange={(e) => updateDevSetting(k, e.target.value)}
-                 style={{
-                   width: '100%',
-                   height: '4px',
-                   backgroundColor: '#333',
-                   cursor: 'pointer'
-                 }}
+                 className="w-full accent-cyan-500 h-1 bg-neutral-800 rounded-none appearance-none cursor-pointer"
                />
             </div>
           ))}
@@ -1510,163 +1464,45 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                 setDevSettings(DEFAULT_DEV_SETTINGS); 
                 gameState.current.devSettings = DEFAULT_DEV_SETTINGS; 
             }}
-            style={{
-              width: '100%',
-              padding: '8px',
-              backgroundColor: '#1a1a1a',
-              border: '1px solid #0088aa',
-              color: 'white',
-              marginTop: '8px',
-              textTransform: 'uppercase',
-              cursor: 'pointer'
-            }}
+            className="w-full py-2 bg-neutral-900 hover:bg-cyan-900 text-white border border-cyan-700 rounded-none mt-2 uppercase"
           >
-            重置
+            {t('btn.reset', lang)}
           </button>
         </div>
       )}
 
       {uiState.isRunning && (
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          padding: '20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          pointerEvents: 'none',
-          zIndex: 10,
-          userSelect: 'none',
-          boxSizing: 'border-box'
-        }}>
-           {/* HP Bar - Left Side */}
-           <div style={{ 
-             width: '200px',
-             maxWidth: '25vw'
-           }}>
-             <div style={{
-               color: '#00f3ff',
-               fontWeight: 'bold',
-               marginBottom: '4px',
-               display: 'flex',
-               justifyContent: 'space-between',
-               fontSize: '14px'
-             }}>
+        <div className="absolute top-0 left-0 w-full p-5 flex justify-between pointer-events-none z-10 select-none">
+           <div className="w-40 md:w-64">
+             <div className="text-cyan-400 font-bold drop-shadow-md mb-1 flex justify-between">
                 <span>HP</span>
-                <span style={{ fontFamily: 'monospace' }}>{Math.ceil(uiState.hp)}/{Math.ceil(uiState.maxHp)}</span>
+                <span className="font-mono">{Math.ceil(uiState.hp)}/{Math.ceil(uiState.maxHp)}</span>
              </div>
-             <div style={{
-               width: '100%',
-               height: '16px',
-               backgroundColor: '#000',
-               border: '1px solid #0088aa',
-               position: 'relative',
-               transform: 'skewX(-15deg)'
-             }}>
-                <div style={{
-                  height: '100%',
-                  background: 'linear-gradient(to right, #dc2626, #ef4444)',
-                  transition: 'all 0.2s',
-                  width: `${(uiState.hp / uiState.maxHp) * 100}%`,
-                  boxShadow: '0 0 10px red'
-                }} />
+             <div className="w-full h-4 bg-black border border-cyan-800 relative skew-x-[-15deg]">
+                <div className="h-full bg-gradient-to-r from-red-600 to-red-500 transition-all duration-200 shadow-[0_0_10px_red]" style={{ width: `${(uiState.hp / uiState.maxHp) * 100}%` }} />
              </div>
            </div>
-
-           {/* EXP and Time - Right Side */}
-           <div style={{ 
-             width: '200px',
-             maxWidth: '25vw',
-             textAlign: 'right'
-           }}>
-             <div style={{
-               color: '#00f3ff',
-               fontWeight: 'bold',
-               marginBottom: '4px',
-               display: 'flex',
-               justifyContent: 'space-between',
-               fontSize: '14px'
-             }}>
-                 <span style={{ fontFamily: 'monospace' }}>LV.{uiState.level}</span>
-                 <span style={{ fontSize: '10px' }}>EXP</span>
+           <div className="w-40 md:w-64 text-right mt-16">
+             <div className="text-cyan-400 font-bold drop-shadow-md mb-1 flex justify-between">
+                 <span className="font-mono">LV.{uiState.level}</span>
+                 <span className="text-xs">EXP SYSTEM</span>
              </div>
-             <div style={{
-               width: '100%',
-               height: '8px',
-               backgroundColor: '#000',
-               border: '1px solid #0088aa',
-               position: 'relative',
-               marginBottom: '8px'
-             }}>
-                <div style={{
-                  height: '100%',
-                  background: 'linear-gradient(to right, #0891b2, #06b6d4)',
-                  transition: 'all 0.2s',
-                  width: `${(uiState.exp / uiState.expToNext) * 100}%`,
-                  boxShadow: '0 0 10px cyan'
-                }} />
+             <div className="w-full h-2 bg-black border border-cyan-800 relative mb-2">
+                <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 transition-all duration-200 shadow-[0_0_10px_cyan]" style={{ width: `${(uiState.exp / uiState.expToNext) * 100}%` }} />
              </div>
-             <div style={{
-               fontSize: '24px',
-               fontWeight: 'bold',
-               fontFamily: 'monospace',
-               color: 'white',
-               textShadow: '0 0 10px cyan'
-             }}>{uiState.time}</div>
+             <div className="text-4xl font-bold font-mono text-white drop-shadow-[0_0_10px_cyan]">{uiState.time}</div>
            </div>
            
+           <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-cyan-700 text-xs tracking-[0.2em] text-center pointer-events-none w-full animate-pulse">
+              SYSTEM ONLINE // {t('ui.drag', lang).toUpperCase()}
            </div>
-      )}
-
-      {/* Bottom Status Text - Separate from HUD */}
-      {uiState.isRunning && (
-        <div style={{
-          position: 'absolute',
-          bottom: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          color: '#0088aa',
-          fontSize: '12px',
-          letterSpacing: '0.2em',
-          textAlign: 'center',
-          pointerEvents: 'none',
-          zIndex: 5
-        }}>
-           SYSTEM ONLINE // 拖拽移動
         </div>
       )}
 
       {uiState.isLevelUp && (
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.9)',
-          zIndex: 40,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-           <h2 style={{
-             fontSize: '36px',
-             color: '#00f3ff',
-             fontWeight: 'bold',
-             marginBottom: '32px',
-             textTransform: 'uppercase',
-             letterSpacing: '0.1em',
-             textShadow: '0 0 20px cyan'
-           }}>升級</h2>
-           <div style={{
-             display: 'flex',
-             flexWrap: 'wrap',
-             gap: '24px',
-             justifyContent: 'center',
-             padding: '16px'
-           }}>
+        <div className="absolute inset-0 bg-black/90 z-40 flex flex-col items-center justify-center backdrop-blur-sm">
+           <h2 className="text-4xl text-cyan-400 font-bold mb-8 uppercase tracking-widest drop-shadow-[0_0_20px_cyan]">{t('levelup.title', lang)}</h2>
+           <div className="flex flex-wrap gap-6 justify-center p-4">
              {upgradeOptions.map((opt, i) => {
                 // Dynamic translation of title based on type
                 let title = '';
@@ -1680,50 +1516,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                 
                 return (
                    <div key={i} onClick={() => selectUpgrade(opt)} 
-                        style={{
-                          width: '224px',
-                          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                          border: '1px solid #0088aa',
-                          padding: '24px',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          position: 'relative',
-                          touchAction: 'manipulation',
-                          minHeight: '140px'
-                        }}
-                        data-upgrade={i}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.05)';
-                          e.currentTarget.style.borderColor = '#ffaa00';
-                          e.currentTarget.style.boxShadow = '0 0 30px rgba(255, 170, 0, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.borderColor = '#0088aa';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}>
-                      <div style={{
-                        display: 'inline-block',
-                        padding: '2px 8px',
-                        backgroundColor: 'rgba(0, 136, 170, 0.3)',
-                        border: '1px solid #00f3ff',
-                        fontSize: '10px',
-                        color: '#00cccc',
-                        marginBottom: '12px',
-                        textTransform: 'uppercase'
-                      }}>標籤</div>
-                      <h3 style={{
-                        color: '#ffaa00',
-                        fontSize: '18px',
-                        fontWeight: 'bold',
-                        marginBottom: '8px'
-                      }}>{title}</h3>
-                      <p style={{
-                        color: '#999',
-                        fontSize: '12px',
-                        lineHeight: '1.4',
-                        fontFamily: 'monospace'
-                      }}>描述</p>
+                        className="w-56 bg-black/80 border border-cyan-700 p-6 cursor-pointer hover:scale-105 hover:border-yellow-400 hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition-all duration-200 relative group clip-path-polygon">
+                      <div className="inline-block px-2 py-0.5 bg-cyan-900/30 border border-cyan-500 rounded-none text-[10px] text-cyan-300 mb-3 uppercase">{t(opt.tagKey, lang)}</div>
+                      <h3 className="text-yellow-400 text-lg font-bold mb-2 group-hover:text-white">{title}</h3>
+                      <p className="text-neutral-400 text-xs leading-relaxed font-mono">{t(opt.descKey, lang)}</p>
                    </div>
                 );
              })}
@@ -1732,126 +1528,32 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
       )}
 
       {!uiState.isRunning && !uiState.isGameOver && (
-         <div style={{
-           position: 'fixed',
-           top: 0,
-           left: 0,
-           width: '100vw',
-           height: '100vh',
-           backgroundColor: '#000000',
-           zIndex: 9999,
-           display: 'flex',
-           flexDirection: 'column',
-           alignItems: 'center',
-           justifyContent: 'center',
-           color: 'white'
-         }}>
+         <div className="absolute inset-0 bg-black z-30 flex flex-col items-center justify-center text-white overflow-hidden">
+            {/* Background Glitch Elements */}
+            <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48cGF0aCBkPSJNMCAwaDQwdjQwSDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTAgNDBoNDBNNDAgMEgwIiBzdHJva2U9IiMwMGYzZmYiIHN0cm9rZS1vcGFjaXR5PSIuMiIvPjwvc3ZnPg==')]"></div>
             
-            <h1 style={{
-              fontSize: '4rem',
-              fontWeight: 'bold',
-              color: '#00f3ff',
-              marginBottom: '2rem',
-              textAlign: 'center'
-            }}>
-              太空獵手 Space Hunter
+            <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-cyan-300 to-cyan-600 mb-2 drop-shadow-[0_0_30px_rgba(0,243,255,0.6)] tracking-tighter relative">
+              {t('app.title', lang)}
             </h1>
-            <p style={{
-              color: '#0088aa',
-              marginBottom: '3rem',
-              fontSize: '0.9rem',
-              letterSpacing: '0.3em'
-            }}>CYBERNETIC WARFARE SIMULATION V9.0</p>
+            <p className="text-cyan-700 tracking-[0.5em] text-sm mb-12 animate-pulse">CYBERNETIC WARFARE SIMULATION V9.0</p>
             
-            <button onClick={startGame} style={{
-              width: '300px',
-              padding: '16px 32px',
-              backgroundColor: 'rgba(0, 243, 255, 0.1)',
-              border: '2px solid #00f3ff',
-              color: '#00f3ff',
-              fontSize: '1.2rem',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              marginBottom: '16px'
-            }}>
-              開始遊戲
+            <button onClick={startGame} className="w-72 py-4 bg-cyan-900/20 border-2 border-cyan-500 text-cyan-400 text-xl font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-black hover:shadow-[0_0_40px_cyan] transition-all duration-300 skew-x-[-10deg]">
+              {t('btn.start', lang)}
             </button>
-            <button onClick={() => setShowDev(true)} style={{
-              width: '300px',
-              padding: '12px 24px',
-              backgroundColor: 'transparent',
-              border: '1px solid #666',
-              color: '#999',
-              fontSize: '0.9rem',
-              cursor: 'pointer'
-            }}>
-              設定
+            <button onClick={() => setShowDev(true)} className="mt-6 w-72 py-3 bg-transparent border border-neutral-700 text-neutral-500 text-sm uppercase hover:text-white hover:border-white transition-all skew-x-[-10deg]">
+              {t('btn.settings', lang)}
             </button>
          </div>
       )}
 
       {uiState.isGameOver && (
-         <div style={{
-           position: 'absolute',
-           top: 0,
-           left: 0,
-           right: 0,
-           bottom: 0,
-           backgroundColor: 'rgba(0, 0, 0, 0.95)',
-           zIndex: 30,
-           display: 'flex',
-           flexDirection: 'column',
-           alignItems: 'center',
-           justifyContent: 'center',
-           color: 'white'
-         }}>
-            <h1 style={{
-              fontSize: '60px',
-              fontWeight: 'black',
-              color: '#dc2626',
-              marginBottom: '16px',
-              textShadow: '0 0 30px red',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase'
-            }}>遊戲結束</h1>
-            <div style={{
-              fontSize: '24px',
-              marginBottom: '48px',
-              fontFamily: 'monospace',
-              borderTop: '1px solid #7f1d1d',
-              borderBottom: '1px solid #7f1d1d',
-              padding: '16px 0',
-              width: '100%',
-              textAlign: 'center',
-              backgroundColor: 'rgba(127, 29, 29, 0.1)'
-            }}>
-              時間: <span style={{ color: 'white', marginLeft: '8px', textShadow: '0 0 10px white' }}>{uiState.time}</span>
+         <div className="absolute inset-0 bg-black/95 z-30 flex flex-col items-center justify-center text-white">
+            <h1 className="text-6xl font-black text-red-600 mb-4 drop-shadow-[0_0_30px_red] tracking-widest uppercase">{t('gameover.title', lang)}</h1>
+            <div className="text-2xl mb-12 font-mono border-t border-b border-red-900 py-4 w-full text-center bg-red-900/10">
+              {t('gameover.time', lang)} <span className="text-white ml-2 drop-shadow-[0_0_10px_white]">{uiState.time}</span>
             </div>
-            <button onClick={startGame} style={{
-              width: '288px',
-              padding: '16px',
-              backgroundColor: 'rgba(127, 29, 29, 0.2)',
-              border: '2px solid #ef4444',
-              color: '#ef4444',
-              fontSize: '20px',
-              fontWeight: 'bold',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              cursor: 'pointer',
-              transition: 'all 0.3s',
-              transform: 'skewX(-10deg)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#ef4444';
-              e.currentTarget.style.color = 'black';
-              e.currentTarget.style.boxShadow = '0 0 40px red';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(127, 29, 29, 0.2)';
-              e.currentTarget.style.color = '#ef4444';
-              e.currentTarget.style.boxShadow = 'none';
-            }}>
-              重新開始
+            <button onClick={startGame} className="w-72 py-4 bg-red-900/20 border-2 border-red-500 text-red-500 text-xl font-bold uppercase tracking-widest hover:bg-red-500 hover:text-black hover:shadow-[0_0_40px_red] transition-all duration-300 skew-x-[-10deg]">
+              {t('btn.restart', lang)}
             </button>
          </div>
       )}
@@ -1859,3 +1561,878 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
     </div>
   );
 };
+</file>
+
+<file path="constants.ts">
+import { EnemyDef, Weapon, Player, DevSettings } from './types';
+
+export const WORLD_WIDTH = 3000;
+export const WORLD_HEIGHT = 3000;
+
+// Cyberpunk Color Palette
+const C_NEON_RED = '#ff0055';
+const C_NEON_GREEN = '#39ff14';
+const C_NEON_BLUE = '#00f3ff'; // Cyan
+const C_NEON_PURPLE = '#bc13fe';
+const C_NEON_YELLOW = '#ffee00';
+const C_WHITE = '#ffffff';
+const C_DARK_METAL = '#2a2a2a';
+
+// Reduced HP multipliers by 50% as requested
+export const ENEMY_TYPES: Record<string, EnemyDef> = {
+  basic: { 
+    color: C_NEON_RED, radius: 14, hpMult: 0.5, speedMult: 1.0, exp: 2, minTime: 0, damage: 0.2, swarmCount: 1, shape: 'circle' 
+  },
+  tank: { 
+    color: '#ff3300', radius: 22, hpMult: 2.0, speedMult: 0.6, exp: 10, minTime: 15, damage: 0.3, swarmCount: 1, shape: 'square' 
+  },
+  speedster: { 
+    color: C_NEON_YELLOW, radius: 10, hpMult: 0.4, speedMult: 1.6, exp: 3, minTime: 30, damage: 0.2, swarmCount: 1, shape: 'triangle' 
+  },
+  swarmer: { 
+    color: C_NEON_PURPLE, radius: 8, hpMult: 0.25, speedMult: 1.0, exp: 1, minTime: 60, damage: 0.1, swarmCount: 3, shape: 'circle' 
+  },
+  behemoth: { 
+    color: '#0066ff', radius: 30, hpMult: 4.0, speedMult: 0.4, exp: 20, minTime: 90, damage: 0.5, swarmCount: 1, shape: 'hexagon' 
+  },
+  flicker: { 
+    color: C_WHITE, radius: 14, hpMult: 0.75, speedMult: 1.2, exp: 5, minTime: 120, damage: 0.25, swarmCount: 1, shape: 'diamond',
+    teleportCooldown: 180, invulnTime: 30, teleportRange: 300 
+  },
+  spitter: { 
+    color: C_NEON_GREEN, radius: 16, hpMult: 1.0, speedMult: 0.8, exp: 8, minTime: 180, damage: 0.35, swarmCount: 1, shape: 'rhombus',
+    attackCooldown: 180, projectileDamage: 10, projectileSpeed: 6, attackRange: 400 
+  },
+  ghost: { 
+    color: '#888888', radius: 25, hpMult: 3.0, speedMult: 1.1, exp: 15, minTime: 240, damage: 0.4, swarmCount: 1, shape: 'pentagon' 
+  },
+};
+
+export const DEFAULT_DEV_SETTINGS: DevSettings = { 
+  dmg: 1.0, spd: 1.0, frq: 1.0, hp: 1.0, mov: 1.0, exp: 1.0 
+};
+
+export const INITIAL_PLAYER: Player = {
+  x: WORLD_WIDTH / 2,
+  y: WORLD_HEIGHT / 2,
+  radius: 15,
+  color: C_NEON_BLUE, // Cyan Player
+  baseSpeed: 4,
+  baseMaxHp: 100,
+  maxHp: 100,
+  hp: 100,
+  level: 1,
+  exp: 0,
+  expToNext: 20,
+  facingAngle: 0,
+  weapons: [
+    { id: 'missile', name: 'missile', type: 'projectile', baseDamage: 20, baseCooldown: 45, timer: 0, range: 350, baseSpeed: 8, count: 1 }
+  ],
+  stats: {
+    area: 1, speed: 1, cdr: 1, magnet: 200, flameDmg: 0, hpRegen: 0, wingmanCount: 0
+  }
+};
+</file>
+
+<file path="index.html">
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>太空獵手 Space Hunter (React)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Import Cyberpunk Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: #050505; /* Deep black */
+        touch-action: none;
+        font-family: 'Orbitron', sans-serif; /* Tech font */
+      }
+      
+      /* CRT Scanline Overlay */
+      body::after {
+        content: " ";
+        display: block;
+        position: absolute;
+        top: 0; left: 0; bottom: 0; right: 0;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        z-index: 9999;
+        background-size: 100% 2px, 3px 100%;
+        pointer-events: none;
+      }
+
+      /* Disable text selection for game feeling */
+      .no-select {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      
+      /* Custom Scrollbar for dev panel */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #111; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #00f3ff; 
+        border-radius: 4px;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "vite": "https://aistudiocdn.com/vite@^7.2.4",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="index.tsx">
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error("Could not find root element to mount to");
+}
+
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+</file>
+
+<file path="metadata.json">
+{
+  "name": "Space Hunter V9: React Edition",
+  "description": "A fast-paced survival roguelite game where you fend off waves of enemies in space. Features special enemies, world exploration, and dynamic upgrades.",
+  "requestFramePermissions": []
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "space-hunter-v9",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1"
+  }
+}
+</file>
+
+<file path="README.md">
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
+
+# Run and deploy your AI Studio app
+
+This contains everything you need to run your app locally.
+
+View your app in AI Studio: https://ai.studio/apps/drive/1v6Q4RZxcX5vLUfhCuBBweKtPWMRi2knT
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["./**/*.ts", "./**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}
+</file>
+
+<file path="types.ts">
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export interface Stats {
+  area: number;
+  speed: number;
+  cdr: number;
+  magnet: number;
+  flameDmg: number;
+  hpRegen: number;
+  wingmanCount: number;
+}
+
+export interface Weapon {
+  id: string;
+  name: string;
+  type?: string;
+  baseDamage: number;
+  baseCooldown: number;
+  timer: number;
+  range: number;
+  baseSpeed: number;
+  count: number;
+}
+
+export interface Player extends Point {
+  radius: number;
+  color: string;
+  baseSpeed: number;
+  baseMaxHp: number;
+  maxHp: number;
+  hp: number;
+  level: number;
+  exp: number;
+  expToNext: number;
+  facingAngle: number;
+  weapons: Weapon[];
+  stats: Stats;
+}
+
+export interface EnemyDef {
+  color: string;
+  radius: number;
+  hpMult: number;
+  speedMult: number;
+  exp: number;
+  minTime: number;
+  damage: number;
+  swarmCount: number;
+  shape: 'circle' | 'square' | 'triangle' | 'hexagon' | 'diamond' | 'rhombus' | 'pentagon';
+  teleportCooldown?: number;
+  invulnTime?: number;
+  teleportRange?: number;
+  attackCooldown?: number;
+  projectileDamage?: number;
+  projectileSpeed?: number;
+  attackRange?: number;
+}
+
+export interface Enemy extends Point {
+  radius: number;
+  color: string;
+  hp: number;
+  maxHp: number;
+  speed: number;
+  damage: number;
+  exp: number;
+  type: string;
+  // AI States
+  attackTimer: number;
+  isAttacking: boolean;
+  teleportTimer: number;
+  isInvulnerable: boolean;
+  invulnTimeRemaining: number;
+}
+
+export interface Projectile extends Point {
+  vx: number;
+  vy: number;
+  damage: number;
+  life: number;
+  radius: number;
+  color: string;
+}
+
+export interface Particle extends Point {
+  vx: number;
+  vy: number;
+  life: number;
+  color: string;
+  size: number;
+}
+
+export interface Gem extends Point {
+  val: number;
+  color?: string;
+}
+
+export interface DamageNumber extends Point {
+  val: number;
+  color: string;
+  life: number;
+}
+
+export interface Lightning {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  life: number;
+  color: string;
+}
+
+export interface Mine extends Point {
+  damage: number;
+  life: number;
+  delay: number;
+  speed: number;
+  radius: number;
+  color: string;
+}
+
+export interface GameState {
+  isRunning: boolean;
+  isPaused: boolean;
+  frameCount: number;
+  timeElapsed: number;
+  player: Player;
+  wingmen: Point[]; // Wingman positions
+  enemies: Enemy[];
+  projectiles: Projectile[];
+  enemyProjectiles: Projectile[];
+  particles: Particle[];
+  gems: Gem[];
+  damageNumbers: DamageNumber[];
+  lightnings: Lightning[];
+  mines: Mine[];
+  devSettings: DevSettings;
+  camX: number;
+  camY: number;
+}
+
+export interface DevSettings {
+  dmg: number;
+  spd: number;
+  frq: number;
+  hp: number;
+  mov: number;
+  exp: number;
+}
+</file>
+
+<file path="utils/audio.ts">
+export class AudioController {
+  private ctx: AudioContext | null = null;
+  private masterGain: GainNode | null = null;
+  private bgmGain: GainNode | null = null;
+  private sfxGain: GainNode | null = null;
+  private isMuted: boolean = false;
+  private bgmVolume: number = 0.2;
+  private sfxVolume: number = 0.2;
+  private bgmInterval: any = null;
+  private kickInterval: any = null;
+
+  constructor() {
+    // Lazy initialization
+  }
+
+  init() {
+    if (this.ctx) return;
+    const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
+    this.ctx = new AudioContextClass();
+    
+    this.masterGain = this.ctx.createGain();
+    this.masterGain.gain.value = 1.0;
+
+    this.bgmGain = this.ctx.createGain();
+    this.bgmGain.gain.value = this.bgmVolume;
+
+    this.sfxGain = this.ctx.createGain();
+    this.sfxGain.gain.value = this.sfxVolume;
+
+    this.bgmGain.connect(this.masterGain);
+    this.sfxGain.connect(this.masterGain);
+    
+    // Compressor to glue sounds together like a mix
+    const compressor = this.ctx.createDynamicsCompressor();
+    compressor.threshold.value = -24;
+    compressor.knee.value = 30;
+    compressor.ratio.value = 12;
+    compressor.attack.value = 0.003;
+    compressor.release.value = 0.25;
+
+    this.masterGain.connect(compressor);
+    compressor.connect(this.ctx.destination);
+  }
+
+  setBgmVolume(val: number) {
+    this.bgmVolume = Math.max(0, Math.min(1, val));
+    if (this.bgmGain && this.ctx) {
+      this.bgmGain.gain.setTargetAtTime(this.bgmVolume, this.ctx.currentTime, 0.1);
+    }
+  }
+
+  setSfxVolume(val: number) {
+    this.sfxVolume = Math.max(0, Math.min(1, val));
+    if (this.sfxGain && this.ctx) {
+      this.sfxGain.gain.setTargetAtTime(this.sfxVolume, this.ctx.currentTime, 0.1);
+    }
+  }
+
+  toggleMute() {
+    this.isMuted = !this.isMuted;
+    if (this.ctx && this.masterGain) {
+      const target = this.isMuted ? 0 : 1.0;
+      this.masterGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.1);
+    }
+    return this.isMuted;
+  }
+
+  // --- Cyberpunk Synthwave BGM ---
+  startBgm() {
+    if (!this.ctx) this.init();
+    if (!this.ctx || this.bgmInterval) return;
+    
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+
+    const tempo = 110; // Faster tempo
+    const beatTime = 60 / tempo; 
+
+    // 1. Bass Drone / Arp
+    const playBass = () => {
+      if (!this.ctx || !this.bgmGain) return;
+      const t = this.ctx.currentTime;
+      
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      // Sawtooth for gritty cyberpunk bass
+      osc.type = 'sawtooth'; 
+      // Progression: C#1 -> A0 -> E1 -> B0
+      const notes = [34.65, 27.50, 41.20, 30.87]; 
+      const note = notes[Math.floor(Math.random() * notes.length)];
+      
+      osc.frequency.setValueAtTime(note, t);
+      
+      // Lowpass filter with envelope for "Wow" sound
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.Q.value = 5;
+      filter.frequency.setValueAtTime(100, t);
+      filter.frequency.exponentialRampToValueAtTime(800, t + 0.2);
+      filter.frequency.exponentialRampToValueAtTime(100, t + 0.5);
+
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.5, t + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + 2.0); // Long decay
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.bgmGain);
+
+      osc.start(t);
+      osc.stop(t + 2.5);
+    };
+
+    // 2. Digital Kick Drum (The Heartbeat)
+    const playKick = () => {
+      if (!this.ctx || !this.bgmGain) return;
+      const t = this.ctx.currentTime;
+      
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.frequency.setValueAtTime(150, t);
+      osc.frequency.exponentialRampToValueAtTime(0.01, t + 0.5);
+
+      gain.gain.setValueAtTime(0.8, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
+
+      osc.connect(gain);
+      gain.connect(this.bgmGain);
+      
+      osc.start(t);
+      osc.stop(t + 0.5);
+    };
+
+    // Loopers
+    playBass();
+    this.bgmInterval = setInterval(playBass, beatTime * 4000); // Bass every measure
+    
+    this.kickInterval = setInterval(() => {
+       playKick();
+    }, beatTime * 1000); // Kick every beat
+  }
+
+  stopBgm() {
+    if (this.bgmInterval) clearInterval(this.bgmInterval);
+    if (this.kickInterval) clearInterval(this.kickInterval);
+    this.bgmInterval = null;
+    this.kickInterval = null;
+  }
+
+  // --- Enhanced SFX ---
+
+  private playTone(freqStart: number, freqEnd: number, duration: number, type: OscillatorType = 'sine', vol: number = 0.1, distortion: boolean = false) {
+    if (!this.ctx || !this.sfxGain || this.isMuted) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freqStart, t);
+    if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, t + duration);
+
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
+
+    if (distortion) {
+        const shaper = this.ctx.createWaveShaper();
+        shaper.curve = this.makeDistortionCurve(400);
+        shaper.oversample = '4x';
+        osc.connect(shaper);
+        shaper.connect(gain);
+    } else {
+        osc.connect(gain);
+    }
+    
+    gain.connect(this.sfxGain);
+    osc.start(t);
+    osc.stop(t + duration);
+  }
+
+  // Distortion curve for gritty sounds
+  private makeDistortionCurve(amount: number) {
+    const k = typeof amount === 'number' ? amount : 50,
+      n_samples = 44100,
+      curve = new Float32Array(n_samples),
+      deg = Math.PI / 180;
+    for (let i = 0; i < n_samples; ++i) {
+      const x = (i * 2) / n_samples - 1;
+      curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
+    }
+    return curve;
+  }
+
+  private playNoise(duration: number, vol: number = 0.1, filterFreq: number = 1000) {
+    if (!this.ctx || !this.sfxGain || this.isMuted) return;
+    const bufferSize = this.ctx.sampleRate * duration;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    const gain = this.ctx.createGain();
+    
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(filterFreq, this.ctx.currentTime);
+    filter.frequency.linearRampToValueAtTime(100, this.ctx.currentTime + duration);
+
+    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.sfxGain);
+    noise.start();
+  }
+
+  playWeaponAttack(id: string) {
+    if (this.isMuted) return;
+    switch (id) {
+      case 'missile':
+        // High tech laser chirp
+        this.playTone(800, 100, 0.15, 'sawtooth', 0.1);
+        break;
+      case 'shotgun':
+        // Distorted blast
+        this.playNoise(0.3, 0.2, 800);
+        this.playTone(150, 50, 0.2, 'square', 0.15, true);
+        break;
+      case 'crossbow':
+        // Metallic kinetic release
+        this.playTone(1200, 2000, 0.1, 'square', 0.05);
+        this.playNoise(0.1, 0.05, 5000);
+        break;
+      case 'lightning':
+        // High voltage zaps
+        this.playNoise(0.2, 0.15, 3000);
+        this.playTone(2000, 100, 0.2, 'sawtooth', 0.05);
+        break;
+      case 'mines':
+        // Digital arming beep
+        this.playTone(1500, 1500, 0.05, 'sine', 0.05);
+        break;
+      case 'mine_explode':
+        // Heavy explosion
+        this.playNoise(0.5, 0.3, 500);
+        this.playTone(100, 10, 0.5, 'sawtooth', 0.3, true);
+        break;
+      case 'orbit':
+        // Resonant hum
+        this.playTone(400, 600, 0.2, 'sine', 0.05);
+        break;
+      case 'flame':
+        // Plasma burn
+        this.playNoise(0.15, 0.05, 2000);
+        break;
+      case 'spitter_charge':
+         this.playTone(200, 800, 0.5, 'square', 0.05);
+         break;
+    }
+  }
+
+  playEnemyHit(type: string) {
+    if (this.isMuted) return;
+    // Digital crunch
+    this.playNoise(0.05, 0.05, 3000);
+    if (type === 'player') {
+       // Glitch sound
+       this.playTone(500, 50, 0.3, 'sawtooth', 0.2, true);
+    }
+  }
+
+  playLevelUp() {
+    // Ascending digital chime
+    if (this.isMuted) return;
+    const now = this.ctx?.currentTime || 0;
+    setTimeout(() => this.playTone(440, 880, 0.2, 'square', 0.15), 0);
+    setTimeout(() => this.playTone(554, 1108, 0.2, 'square', 0.15), 100);
+    setTimeout(() => this.playTone(659, 1318, 0.4, 'square', 0.15), 200);
+  }
+
+  playGameOver() {
+    // Power down
+    this.playTone(200, 20, 1.5, 'sawtooth', 0.3, true);
+  }
+}
+
+export const audioController = new AudioController();
+</file>
+
+<file path="utils/i18n.ts">
+export type Lang = 'zh' | 'en';
+
+const dictionaries: Record<Lang, Record<string, string>> = {
+  zh: {
+    'app.title': '太空獵手',
+    'app.subtitle': 'REACT V9 EDITION',
+    'ui.hp': 'HP',
+    'ui.exp': 'EXP',
+    'ui.level': 'Lv.',
+    'ui.drag': '拖曳移動 | 自動攻擊',
+    'btn.start': '開始狩獵',
+    'btn.restart': '重新開始',
+    'btn.settings': '系統設定',
+    'btn.reset': '⟲ 重置所有設定',
+    'btn.close': '✕',
+    'settings.title': '設定',
+    'settings.dev_console': '開發者控制台',
+    'settings.language': '語言 / Language',
+    'settings.bgm': '音樂音量',
+    'settings.sfx': '音效音量',
+    'setting.dmg': '武器出力倍率',
+    'setting.spd': '敵機速度',
+    'setting.frq': '火控系統頻率',
+    'setting.hp': '裝甲完整度倍率',
+    'setting.mov': '推進器倍率',
+    'setting.exp': '數據採集倍率',
+    'gameover.title': '信號中斷',
+    'gameover.time': '存活時間:',
+    'levelup.title': '選擇升級模組',
+    // Weapons
+    'weapon.missile': '脈衝飛彈',
+    'weapon.shotgun': '中子擴散砲',
+    'weapon.crossbow': '電磁軌道砲',
+    'weapon.lightning': '高壓電擊',
+    'weapon.wand': '智能浮游炮',
+    'weapon.thunder': '電弧產生器',
+    'weapon.mines': '蜘蛛地雷',
+    'weapon.orbit': '引力子護盾',
+    'weapon.flame': '電漿輻射場',
+    // Upgrades
+    'upgrade.new': '裝備新武裝',
+    'upgrade.enhance': '強化武裝',
+    'upgrade.tag.passive': '被動模組',
+    'upgrade.tag.new_passive': '新模組',
+    'upgrade.tag.high_dmg': '重型武裝',
+    'upgrade.tag.defensive': '防禦力場',
+    'upgrade.tag.trap': '戰術陷阱',
+    'upgrade.tag.homing': '導引武器',
+    'upgrade.tag.aoe': '廣域殲滅',
+    'upgrade.tag.survival': '生存系統',
+    'upgrade.tag.utility': '輔助系統',
+    'upgrade.tag.supply': '補給',
+    'upgrade.tag.size': '粒子增幅',
+    'upgrade.tag.summon': '無人機',
+    // Upgrade Descriptions
+    'desc.flame.new': '啟動熱能排氣口，持續釋放電漿燒灼周圍敵機。',
+    'desc.flame.upgrade': '傷害 +10，覆蓋範圍 +30%',
+    'desc.crossbow.new': '裝備超高速動能彈頭，具備極高的單發貫穿力。',
+    'desc.crossbow.upgrade': '傷害 +30%，充能時間 -10%',
+    'desc.orbit.new': '生成反重力粒子場環繞戰機，粉碎接近的物體。',
+    'desc.orbit.upgrade': '粒子核心數量 +1',
+    'desc.mines.new': '部署具備敵我識別功能的自走蜘蛛雷。',
+    'desc.mines.upgrade': '部署數量 +1',
+    'desc.wand.new': '釋放自動索敵的微型浮游炮進行攻擊。',
+    'desc.wand.upgrade': '浮游炮數量 +1，射速 +10%',
+    'desc.thunder.new': '釋放高壓連鎖電弧，在目標之間跳躍傳導。',
+    'desc.thunder.upgrade': '最大連鎖數 +2',
+    'desc.hp_regen': '啟動奈米修復機器人，每秒修復 2 點裝甲值。',
+    'desc.magnet': '增強引力汲取裝置，數據採集範圍 +100。',
+    'desc.global_dmg': '對火控系統進行超頻，所有武器基礎傷害 +10%。',
+    'desc.heal': '進行緊急維修，恢復 50% 結構完整度。',
+    'desc.giant_size': '擴充粒子束縛力場，所有武器範圍與體積 +25%。',
+    'desc.wingman.new': '呼叫戰術無人機支援，複製主機攻擊模式(33%出力)。',
+    'desc.wingman.upgrade': '無人機編隊數量 +1 (上限5)',
+    // Upgrade Titles (General)
+    'title.hp_regen': '奈米修復',
+    'title.magnet': '引力汲取',
+    'title.global_dmg': '武器超頻',
+    'title.heal': '緊急維修',
+    'title.giant_size': '粒子擴充',
+    'title.wingman': '戰術無人機',
+  },
+  en: {
+    'app.title': 'Space Hunter',
+    'app.subtitle': 'REACT V9 EDITION',
+    'ui.hp': 'HULL',
+    'ui.exp': 'DATA',
+    'ui.level': 'Lv.',
+    'ui.drag': 'Drag to Move | Auto Fire',
+    'btn.start': 'Initialize',
+    'btn.restart': 'Reboot System',
+    'btn.settings': 'Sys Config',
+    'btn.reset': '⟲ Factory Reset',
+    'btn.close': '✕',
+    'settings.title': 'Config',
+    'settings.dev_console': 'Dev Console',
+    'settings.language': 'Language',
+    'settings.bgm': 'BGM Level',
+    'settings.sfx': 'SFX Level',
+    'setting.dmg': 'Weapon Output',
+    'setting.spd': 'Enemy Speed',
+    'setting.frq': 'Fire Rate',
+    'setting.hp': 'Hull Integrity',
+    'setting.mov': 'Thruster Power',
+    'setting.exp': 'Data Gain',
+    'gameover.title': 'SIGNAL LOST',
+    'gameover.time': 'Operational Time:',
+    'levelup.title': 'Install Module',
+     // Weapons
+    'weapon.missile': 'Pulse Missile',
+    'weapon.shotgun': 'Neutron Scatter',
+    'weapon.crossbow': 'Railgun',
+    'weapon.lightning': 'High Voltage',
+    'weapon.wand': 'Smart Drones',
+    'weapon.thunder': 'Arc Generator',
+    'weapon.mines': 'Spider Mines',
+    'weapon.orbit': 'Graviton Field',
+    'weapon.flame': 'Plasma Radiation',
+    // Upgrades
+    'upgrade.new': 'New Weapon',
+    'upgrade.enhance': 'Upgrade',
+    'upgrade.tag.passive': 'Passive',
+    'upgrade.tag.new_passive': 'New Passive',
+    'upgrade.tag.high_dmg': 'Heavy Arms',
+    'upgrade.tag.defensive': 'Defense',
+    'upgrade.tag.trap': 'Tactical Trap',
+    'upgrade.tag.homing': 'Guided',
+    'upgrade.tag.aoe': 'AOE',
+    'upgrade.tag.survival': 'Survival',
+    'upgrade.tag.utility': 'Utility',
+    'upgrade.tag.supply': 'Supply',
+    'upgrade.tag.size': 'Amplifier',
+    'upgrade.tag.summon': 'Drone',
+    // Upgrade Descriptions
+    'desc.flame.new': 'Passive: Emits damaging plasma radiation.',
+    'desc.flame.upgrade': 'Damage +10, Area +30%',
+    'desc.crossbow.new': 'Fires high-velocity kinetic railgun rounds.',
+    'desc.crossbow.upgrade': 'Damage +30%, Charge Time -10%',
+    'desc.orbit.new': 'Generates a graviton field that crushes nearby enemies.',
+    'desc.orbit.upgrade': 'Core Count +1',
+    'desc.mines.new': 'Deploys autonomous tracking spider mines.',
+    'desc.mines.upgrade': 'Count +1',
+    'desc.wand.new': 'Launches seeking hunter-killer drones.',
+    'desc.wand.upgrade': 'Drone Count +1, Fire Rate +10%',
+    'desc.thunder.new': 'Discharges chain lightning arcs between targets.',
+    'desc.thunder.upgrade': 'Chain Count +2',
+    'desc.hp_regen': 'Activates nanobots. Repairs 2 Hull per second',
+    'desc.magnet': 'Enhances gravity scoop range by +100',
+    'desc.global_dmg': 'Overclocks fire control. All Weapon Damage +10%',
+    'desc.heal': 'Emergency repairs. Recover 50% Hull',
+    'desc.giant_size': 'Expands particle field. Weapon Size +25%',
+    'desc.wingman.new': 'Deploys 1 Tactical Drone. Copies all attacks (33% Output).',
+    'desc.wingman.upgrade': 'Drone Count +1 (Max 5)',
+    // Upgrade Titles
+    'title.hp_regen': 'Nanobot Repair',
+    'title.magnet': 'Gravity Scoop',
+    'title.global_dmg': 'Overclock',
+    'title.heal': 'Emergency Repair',
+    'title.giant_size': 'Particle Amp',
+    'title.wingman': 'Tactical Drone',
+  }
+};
+
+export const t = (key: string, lang: Lang): string => {
+  return dictionaries[lang][key] || key;
+};
+</file>
+
+<file path="vite.config.ts">
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  base: './',
+})
+</file>
+
+</files>

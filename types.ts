@@ -12,6 +12,7 @@ export interface Stats {
   flameDmg: number;
   hpRegen: number;
   wingmanCount: number;
+  flameRangeBonus?: number;
 }
 
 export interface Weapon {

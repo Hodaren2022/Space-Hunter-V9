@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom game styles */
+.clip-path-polygon {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+/* CRT effect styles */
+.crt-scanlines::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+              linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 9999;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #111; 
+}
+::-webkit-scrollbar-thumb {
+  background: #00f3ff; 
+  border-radius: 4px;
+}
+
+/* Disable text selection for game */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Mobile touch improvements */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.upgrade-option {
+  min-height: 120px;
+  padding: 1.5rem;
+}
+
+/* Ensure touch targets are large enough for mobile */
+@media (max-width: 768px) {
+  .upgrade-option {
+    min-height: 140px;
+    padding: 2rem;
+    margin: 0.5rem;
+  }
+  
+  button {
+    min-height: 48px;
+    padding: 12px 24px;
+  }
+}
