@@ -1,9 +1,8 @@
 
-// Point type for 2D coordinates
-export type Point = {
+export interface Point {
   x: number;
   y: number;
-};
+}
 
 export interface Stats {
   area: number;
@@ -124,7 +123,6 @@ export interface Mine extends Point {
   color: string;
 }
 
-// Game state interface containing all game data
 export interface GameState {
   isRunning: boolean;
   isPaused: boolean;
@@ -143,15 +141,6 @@ export interface GameState {
   devSettings: DevSettings;
   camX: number;
   camY: number;
-}
-
-// Upgrade option interface for level-up system
-export interface UpgradeOption {
-  type: 'stat' | 'weapon' | 'enhance' | 'new';
-  key: string;
-  descKey: string;
-  tagKey: string;
-  action: () => void;
 }
 
 export interface DevSettings {

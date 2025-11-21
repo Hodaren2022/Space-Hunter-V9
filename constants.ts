@@ -1,5 +1,5 @@
 
-import { EnemyDef, Player, DevSettings } from './types';
+import { EnemyDef, Weapon, Player, DevSettings } from './types';
 
 export const WORLD_WIDTH = 3000;
 export const WORLD_HEIGHT = 3000;
@@ -11,6 +11,7 @@ const C_NEON_BLUE = '#00f3ff'; // Cyan
 const C_NEON_PURPLE = '#bc13fe';
 const C_NEON_YELLOW = '#ffee00';
 const C_WHITE = '#ffffff';
+const C_DARK_METAL = '#2a2a2a';
 
 // Reduced HP multipliers by 50% as requested
 export const ENEMY_TYPES: Record<string, EnemyDef> = {
@@ -66,5 +67,3 @@ export const INITIAL_PLAYER: Player = {
     area: 1, speed: 1, cdr: 1, magnet: 200, flameDmg: 0, hpRegen: 0, wingmanCount: 0
   }
 };
-
-// Remove unused import and variable

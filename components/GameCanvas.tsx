@@ -1,13 +1,15 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { 
-  GameState, Enemy, Point, DevSettings, UpgradeOption, Weapon
+  GameState, Player, Enemy, Projectile, Particle, Gem, DamageNumber, Lightning, Mine, Point, DevSettings
 } from '../types';
 import { ENEMY_TYPES, INITIAL_PLAYER, WORLD_HEIGHT, WORLD_WIDTH, DEFAULT_DEV_SETTINGS } from '../constants';
 import { audioController } from '../utils/audio';
 import { t, Lang } from '../utils/i18n';
 
-export const GameCanvas: React.FC = () => {
+interface GameCanvasProps {}
+
+export const GameCanvas: React.FC<GameCanvasProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [uiState, setUiState] = useState({
@@ -19,7 +21,7 @@ export const GameCanvas: React.FC = () => {
   const [sfxVolume, setSfxVolume] = useState(0.2);
   const [lang, setLang] = useState<Lang>('zh');
   const [devSettings, setDevSettings] = useState<DevSettings>(DEFAULT_DEV_SETTINGS);
-  const [upgradeOptions, setUpgradeOptions] = useState<UpgradeOption[]>([]);
+  const [upgradeOptions, setUpgradeOptions] = useState<any[]>([]);
 
   // Mutable Game State
   const gameState = useRef<GameState & { glitchOffset: number }>({
@@ -70,21 +72,21 @@ export const GameCanvas: React.FC = () => {
       if (e.cancelable) e.preventDefault();
       
       if (e.touches.length > 0) {
-        const firstTouch = e.touches[0];
-        touchRef.current.start = { x: firstTouch.clientX, y: firstTouch.clientY };
-        touchRef.current.current = { x: firstTouch.clientX, y: firstTouch.clientY };
+        const t = e.touches[0];
+        touchRef.current.start = { x: t.clientX, y: t.clientY };
+        touchRef.current.current = { x: t.clientX, y: t.clientY };
       }
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (touchRef.current.start && e.touches.length > 0) {
         if (e.cancelable) e.preventDefault();
-        const firstTouch = e.touches[0];
-        touchRef.current.current = { x: firstTouch.clientX, y: firstTouch.clientY };
+        const t = e.touches[0];
+        touchRef.current.current = { x: t.clientX, y: t.clientY };
       }
     };
 
-    const onTouchEnd = () => {
+    const onTouchEnd = (e: TouchEvent) => {
       touchRef.current.start = null;
       touchRef.current.current = null;
     };
@@ -171,20 +173,20 @@ export const GameCanvas: React.FC = () => {
     gameState.current.glitchOffset = 2;
   };
 
-  const getNearestEnemy = (x: number, y: number, range: number): Enemy | null => {
+  const getNearestEnemy = (x: number, y: number, range: number) => {
     let nearest = null;
     let minDistance = Infinity;
-    for (const enemy of gameState.current.enemies) {
-      const dist = Math.hypot(enemy.x - x, enemy.y - y);
-      if (dist < minDistance && dist <= range && !enemy.isInvulnerable) {
+    for (const e of gameState.current.enemies) {
+      const dist = Math.hypot(e.x - x, e.y - y);
+      if (dist < minDistance && dist <= range && !e.isInvulnerable) {
         minDistance = dist;
-        nearest = enemy;
+        nearest = e;
       }
     }
     return nearest;
   };
 
-  const fireProjectile = (x: number, y: number, target: Enemy | null, weapon: Weapon, damageMult: number, fixedAngle: number | null = null) => {
+  const fireProjectile = (x: number, y: number, target: Enemy | null, weapon: any, damageMult: number, fixedAngle: number | null = null) => {
     let angle = fixedAngle;
     if (target && fixedAngle === null) {
       angle = Math.atan2(target.y - y, target.x - x);
@@ -259,23 +261,14 @@ export const GameCanvas: React.FC = () => {
     let dx = 0, dy = 0;
     let moveMagnitude = 0;
 
-    if (keys.current['w'] || keys.current['ArrowUp']) {
-      dy = -1;
-    }
-    if (keys.current['s'] || keys.current['ArrowDown']) {
-      dy = 1;
-    }
-    if (keys.current['a'] || keys.current['ArrowLeft']) {
-      dx = -1;
-    }
-    if (keys.current['d'] || keys.current['ArrowRight']) {
-      dx = 1;
-    }
+    if (keys.current['w'] || keys.current['ArrowUp']) dy = -1;
+    if (keys.current['s'] || keys.current['ArrowDown']) dy = 1;
+    if (keys.current['a'] || keys.current['ArrowLeft']) dx = -1;
+    if (keys.current['d'] || keys.current['ArrowRight']) dx = 1;
 
     if (dx !== 0 || dy !== 0) {
         const dist = Math.hypot(dx, dy);
-        dx /= dist; 
-        dy /= dist;
+        dx /= dist; dy /= dist;
         moveMagnitude = 1.0;
     }
 
@@ -338,7 +331,7 @@ export const GameCanvas: React.FC = () => {
 
         shooters.forEach(shooter => {
             // For each shooter, find their own nearest target
-            const nearest = getNearestEnemy(shooter.x, shooter.y, w.range * player.stats.area);
+            let nearest = getNearestEnemy(shooter.x, shooter.y, w.range * player.stats.area);
             const needTarget = ['missile', 'shotgun', 'crossbow', 'wand', 'thunder'].includes(w.id);
 
             if (!needTarget || nearest) {
@@ -594,10 +587,9 @@ export const GameCanvas: React.FC = () => {
     // 8. Spawner (Same logic)
     const spawnRate = Math.max(15, 80 - Math.floor(state.timeElapsed / 12));
     if (state.frameCount % spawnRate === 0) {
-      const availableTypes = Object.entries(ENEMY_TYPES).filter(([, typeDef]) => state.timeElapsed >= typeDef.minTime);
+      const availableTypes = Object.entries(ENEMY_TYPES).filter(([_, t]) => state.timeElapsed >= t.minTime);
       if (availableTypes.length > 0) {
-        const randomIndex = Math.floor(Math.random() * availableTypes.length);
-        const [typeId, typeDef] = availableTypes[randomIndex];
+        const [typeId, typeDef] = availableTypes[Math.floor(Math.random() * availableTypes.length)];
         const angle = Math.random() * Math.PI * 2;
         const dist = Math.max(canvasWidth, canvasHeight) / 2 + 100;
         const ex = player.x + Math.cos(angle) * dist;
@@ -624,57 +616,56 @@ export const GameCanvas: React.FC = () => {
     }
 
     // Enemy AI
-    state.enemies.forEach((currentEnemy) => {
-      const typeDef = ENEMY_TYPES[currentEnemy.type];
-      const distToPlayer = Math.hypot(player.x - currentEnemy.x, player.y - currentEnemy.y);
-      let moveSpeed = currentEnemy.speed;
-
-      if (currentEnemy.type === 'flicker') {
-        currentEnemy.teleportTimer++;
-        if (currentEnemy.isInvulnerable) {
-          currentEnemy.invulnTimeRemaining--;
-          if (currentEnemy.invulnTimeRemaining <= 0) currentEnemy.isInvulnerable = false;
+    state.enemies.forEach(e => {
+      const typeDef = ENEMY_TYPES[e.type];
+      const distToPlayer = Math.hypot(player.x - e.x, player.y - e.y);
+      let moveSpeed = e.speed;
+      if (e.type === 'flicker') {
+        e.teleportTimer++;
+        if (e.isInvulnerable) {
+          e.invulnTimeRemaining--;
+          if (e.invulnTimeRemaining <= 0) e.isInvulnerable = false;
         }
-        if (currentEnemy.teleportTimer >= (typeDef.teleportCooldown || 180)) {
+        if (e.teleportTimer >= (typeDef.teleportCooldown || 180)) {
            const angle = Math.random() * Math.PI * 2;
            const range = typeDef.teleportRange || 300;
-           let newX = currentEnemy.x + Math.cos(angle) * range * Math.random();
-           let newY = currentEnemy.y + Math.sin(angle) * range * Math.random();
-           newX = Math.max(currentEnemy.radius, Math.min(WORLD_WIDTH - currentEnemy.radius, newX));
-           newY = Math.max(currentEnemy.radius, Math.min(WORLD_HEIGHT - currentEnemy.radius, newY));
-           currentEnemy.x = newX; currentEnemy.y = newY;
-           currentEnemy.teleportTimer = 0; currentEnemy.isInvulnerable = true;
-           currentEnemy.invulnTimeRemaining = typeDef.invulnTime || 30;
-           createParticles(currentEnemy.x, currentEnemy.y, currentEnemy.color, 20);
+           let newX = e.x + Math.cos(angle) * range * Math.random();
+           let newY = e.y + Math.sin(angle) * range * Math.random();
+           newX = Math.max(e.radius, Math.min(WORLD_WIDTH - e.radius, newX));
+           newY = Math.max(e.radius, Math.min(WORLD_HEIGHT - e.radius, newY));
+           e.x = newX; e.y = newY;
+           e.teleportTimer = 0; e.isInvulnerable = true;
+           e.invulnTimeRemaining = typeDef.invulnTime || 30;
+           createParticles(e.x, e.y, e.color, 20);
         }
       }
-      if (currentEnemy.type === 'spitter') {
-        currentEnemy.attackTimer++;
-        if (distToPlayer <= (typeDef.attackRange || 400) && currentEnemy.attackTimer >= (typeDef.attackCooldown || 180) && !currentEnemy.isAttacking) {
-           currentEnemy.isAttacking = true; moveSpeed = 0;
+      if (e.type === 'spitter') {
+        e.attackTimer++;
+        if (distToPlayer <= (typeDef.attackRange || 400) && e.attackTimer >= (typeDef.attackCooldown || 180) && !e.isAttacking) {
+           e.isAttacking = true; moveSpeed = 0;
            audioController.playWeaponAttack('spitter_charge');
            setTimeout(() => {
-             if (state.isPaused || !state.enemies.includes(currentEnemy)) return;
-             const angle = Math.atan2(player.y - currentEnemy.y, player.x - currentEnemy.x);
+             if (state.isPaused || !state.enemies.includes(e)) return;
+             const angle = Math.atan2(player.y - e.y, player.x - e.x);
              state.enemyProjectiles.push({
-               x: currentEnemy.x, y: currentEnemy.y,
+               x: e.x, y: e.y,
                vx: Math.cos(angle) * (typeDef.projectileSpeed || 6),
                vy: Math.sin(angle) * (typeDef.projectileSpeed || 6),
                damage: typeDef.projectileDamage || 10,
                life: 600, radius: 5, color: '#39ff14' // Neon green enemy shot
              });
              audioController.playWeaponAttack('crossbow');
-             currentEnemy.isAttacking = false; currentEnemy.attackTimer = 0;
+             e.isAttacking = false; e.attackTimer = 0;
            }, 500);
-        } else if (currentEnemy.isAttacking) moveSpeed = 0;
+        } else if (e.isAttacking) moveSpeed = 0;
       }
-      if (!currentEnemy.isAttacking) {
-        const angle = Math.atan2(player.y - currentEnemy.y, player.x - currentEnemy.x);
-        currentEnemy.x += Math.cos(angle) * moveSpeed;
-        currentEnemy.y += Math.sin(angle) * moveSpeed;
+      if (!e.isAttacking) {
+        const angle = Math.atan2(player.y - e.y, player.x - e.x);
+        e.x += Math.cos(angle) * moveSpeed;
+        e.y += Math.sin(angle) * moveSpeed;
       }
-      if (Math.hypot(player.x - currentEnemy.x, player.y - currentEnemy.y) < player.radius + currentEnemy.radius) {
-        player.hp -= currentEnemy.damage;
+      if (Math.hypot(player.x - e.x, player.y - e.y) < player.radius + e.radius) {
+        player.hp -= e.damage;
         if (player.hp <= 0) endGame();
       }
     });
@@ -1148,11 +1139,11 @@ export const GameCanvas: React.FC = () => {
     setUiState(prev => ({ ...prev, isLevelUp: true }));
   };
 
-  const generateUpgrades = (): void => {
-      const player = gameState.current.player;
-      const possible: UpgradeOption[] = [];
+  const generateUpgrades = () => {
+    const player = gameState.current.player;
+    const possible: any[] = [];
 
-      const hasFlame = player.stats.flameDmg > 0;
+    const hasFlame = player.stats.flameDmg > 0;
     possible.push({
       type: hasFlame ? 'enhance' : 'new',
       key: 'weapon.flame',
@@ -1246,7 +1237,7 @@ export const GameCanvas: React.FC = () => {
     setUpgradeOptions(possible.sort(() => 0.5 - Math.random()).slice(0, 3));
   };
 
-  const selectUpgrade = (option: UpgradeOption): void => {
+  const selectUpgrade = (option: any) => {
     option.action();
     gameState.current.isPaused = false;
     setUiState(prev => ({ ...prev, isLevelUp: false }));
@@ -1269,7 +1260,7 @@ export const GameCanvas: React.FC = () => {
     return () => cancelAnimationFrame(requestRef.current!);
   }, [lang]); 
 
-  const updateDevSetting = (key: keyof DevSettings, val: string): void => {
+  const updateDevSetting = (key: keyof DevSettings, val: string) => {
      const num = parseFloat(val);
      setDevSettings(prev => {
          const next = { ...prev, [key]: num };
@@ -1410,7 +1401,7 @@ export const GameCanvas: React.FC = () => {
         <div className="absolute inset-0 bg-black/90 z-40 flex flex-col items-center justify-center backdrop-blur-sm">
            <h2 className="text-4xl text-cyan-400 font-bold mb-8 uppercase tracking-widest drop-shadow-[0_0_20px_cyan]">{t('levelup.title', lang)}</h2>
            <div className="flex flex-wrap gap-6 justify-center p-4">
-             {upgradeOptions.map((opt: UpgradeOption, i) => {
+             {upgradeOptions.map((opt, i) => {
                 // Dynamic translation of title based on type
                 let title = '';
                 if (opt.type === 'stat') {

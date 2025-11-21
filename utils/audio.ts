@@ -7,8 +7,8 @@ export class AudioController {
   private isMuted: boolean = false;
   private bgmVolume: number = 0.2;
   private sfxVolume: number = 0.2;
-  private bgmInterval: NodeJS.Timeout | null = null;
-  private kickInterval: NodeJS.Timeout | null = null;
+  private bgmInterval: any = null;
+  private kickInterval: any = null;
 
   constructor() {
     // Lazy initialization
@@ -16,7 +16,7 @@ export class AudioController {
 
   init() {
     if (this.ctx) return;
-    const AudioContextClass = (window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
+    const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
     this.ctx = new AudioContextClass();
     
     this.masterGain = this.ctx.createGain();
@@ -90,8 +90,7 @@ export class AudioController {
       osc.type = 'sawtooth'; 
       // Progression: C#1 -> A0 -> E1 -> B0
       const notes = [34.65, 27.50, 41.20, 30.87]; 
-      const randomIndex = Math.floor(Math.random() * notes.length);
-      const note: number = notes[randomIndex];
+      const note = notes[Math.floor(Math.random() * notes.length)];
       
       osc.frequency.setValueAtTime(note, t);
       
@@ -138,7 +137,7 @@ export class AudioController {
 
     // Loopers
     playBass();
-    this.bgmInterval = setInterval(() => playBass(), beatTime * 4000); // Bass every measure
+    this.bgmInterval = setInterval(playBass, beatTime * 4000); // Bass every measure
     
     this.kickInterval = setInterval(() => {
        playKick();
@@ -154,7 +153,7 @@ export class AudioController {
 
   // --- Enhanced SFX ---
 
-  private playTone(freqStart: number, freqEnd: number, duration: number, type: OscillatorType = 'sine', vol: number = 0.1, distortion = false) {
+  private playTone(freqStart: number, freqEnd: number, duration: number, type: OscillatorType = 'sine', vol: number = 0.1, distortion: boolean = false) {
     if (!this.ctx || !this.sfxGain || this.isMuted) return;
     const t = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
@@ -184,10 +183,10 @@ export class AudioController {
 
   // Distortion curve for gritty sounds
   private makeDistortionCurve(amount: number) {
-    const k: number = typeof amount === 'number' ? amount : 50;
-    const n_samples = 44100;
-    const curve = new Float32Array(n_samples);
-    const deg = Math.PI / 180;
+    const k = typeof amount === 'number' ? amount : 50,
+      n_samples = 44100,
+      curve = new Float32Array(n_samples),
+      deg = Math.PI / 180;
     for (let i = 0; i < n_samples; ++i) {
       const x = (i * 2) / n_samples - 1;
       curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
@@ -195,7 +194,7 @@ export class AudioController {
     return curve;
   }
 
-  private playNoise(duration: number, vol: number = 0.1, filterFreq = 1000) {
+  private playNoise(duration: number, vol: number = 0.1, filterFreq: number = 1000) {
     if (!this.ctx || !this.sfxGain || this.isMuted) return;
     const bufferSize = this.ctx.sampleRate * duration;
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -280,6 +279,7 @@ export class AudioController {
   playLevelUp() {
     // Ascending digital chime
     if (this.isMuted) return;
+    const now = this.ctx?.currentTime || 0;
     setTimeout(() => this.playTone(440, 880, 0.2, 'square', 0.15), 0);
     setTimeout(() => this.playTone(554, 1108, 0.2, 'square', 0.15), 100);
     setTimeout(() => this.playTone(659, 1318, 0.4, 'square', 0.15), 200);
