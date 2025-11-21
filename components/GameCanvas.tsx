@@ -63,12 +63,22 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
     
     const onTouchStart = (e: TouchEvent) => {
       const target = e.target as HTMLElement;
-      // Allow interactions with UI buttons/inputs
-      if (target.tagName === 'BUTTON' || target.closest('button') || target.tagName === 'INPUT') {
+      
+      // Allow interactions with UI elements (buttons, inputs, upgrade options, etc.)
+      if (target.tagName === 'BUTTON' || 
+          target.closest('button') || 
+          target.tagName === 'INPUT' ||
+          target.closest('[data-ui-element]') ||
+          target.closest('.cursor-pointer') ||
+          // Check if it's an upgrade option or any clickable UI element
+          target.closest('[onclick]') ||
+          target.onclick ||
+          // Check for React onClick handlers
+          target.getAttribute('data-clickable') === 'true') {
         return;
       }
       
-      // Prevent default browser scroll/zoom behavior for game control
+      // Prevent default browser scroll/zoom behavior for game control only
       if (e.cancelable) e.preventDefault();
       
       if (e.touches.length > 0) {
@@ -1288,15 +1298,19 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
       <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-cyan-400 pointer-events-none opacity-50"></div>
 
       <button 
-        className="absolute top-5 right-5 bg-black/50 border border-cyan-500 text-cyan-400 px-4 py-2 rounded-none z-50 backdrop-blur-md hover:bg-cyan-900/50"
+        className="absolute top-5 right-5 bg-black/50 border border-cyan-500 text-cyan-400 px-4 py-2 rounded-none z-50 backdrop-blur-md hover:bg-cyan-900/50 touch-manipulation"
         onClick={() => setShowDev(!showDev)}
+        data-ui-element="settings-button"
+        style={{ touchAction: 'manipulation' }}
       >
         ⚙️
       </button>
 
       <button 
-        className="absolute top-5 right-20 bg-black/50 border border-neutral-500 text-neutral-400 px-4 py-2 rounded-none z-50 backdrop-blur-md hover:text-white"
+        className="absolute top-5 right-20 bg-black/50 border border-neutral-500 text-neutral-400 px-4 py-2 rounded-none z-50 backdrop-blur-md hover:text-white touch-manipulation"
         onClick={toggleMute}
+        data-ui-element="mute-button"
+        style={{ touchAction: 'manipulation' }}
       >
         {isMuted ? '🔇' : '🔊'}
       </button>
@@ -1305,14 +1319,26 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
         <div className="absolute top-20 right-5 w-80 bg-black/90 border border-cyan-500 p-6 z-50 text-sm shadow-[0_0_20px_rgba(0,243,255,0.2)] max-h-[80vh] overflow-y-auto">
           <div className="flex justify-between items-center border-b border-neutral-700 pb-3 mb-4">
              <h3 className="text-cyan-400 font-bold uppercase tracking-widest">{t('settings.dev_console', lang)}</h3>
-             <button onClick={() => setShowDev(false)} className="text-neutral-400 hover:text-white">✕</button>
+             <button 
+              onClick={() => setShowDev(false)} 
+              className="text-neutral-400 hover:text-white touch-manipulation"
+              data-ui-element="close-button"
+              style={{ touchAction: 'manipulation' }}
+            >
+              ✕
+            </button>
           </div>
           
           <div className="mb-4">
             <div className="flex justify-between text-neutral-300 mb-2">
                <span>{t('settings.language', lang)}</span>
             </div>
-            <button onClick={toggleLang} className="w-full py-2 bg-neutral-900 border border-cyan-800 hover:border-cyan-400 rounded-none text-cyan-300 font-bold">
+            <button 
+              onClick={toggleLang} 
+              className="w-full py-2 bg-neutral-900 border border-cyan-800 hover:border-cyan-400 rounded-none text-cyan-300 font-bold touch-manipulation"
+              data-ui-element="language-button"
+              style={{ touchAction: 'manipulation' }}
+            >
                {lang === 'zh' ? '繁體中文' : 'English'}
             </button>
           </div>
@@ -1362,7 +1388,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                 setDevSettings(DEFAULT_DEV_SETTINGS); 
                 gameState.current.devSettings = DEFAULT_DEV_SETTINGS; 
             }}
-            className="w-full py-2 bg-neutral-900 hover:bg-cyan-900 text-white border border-cyan-700 rounded-none mt-2 uppercase"
+            className="w-full py-2 bg-neutral-900 hover:bg-cyan-900 text-white border border-cyan-700 rounded-none mt-2 uppercase touch-manipulation"
+            data-ui-element="reset-button"
+            style={{ touchAction: 'manipulation' }}
           >
             {t('btn.reset', lang)}
           </button>
@@ -1413,11 +1441,37 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                 }
                 
                 return (
-                   <div key={i} onClick={() => selectUpgrade(opt)} 
-                        className="w-56 bg-black/80 border border-cyan-700 p-6 cursor-pointer hover:scale-105 hover:border-yellow-400 hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition-all duration-200 relative group clip-path-polygon">
-                      <div className="inline-block px-2 py-0.5 bg-cyan-900/30 border border-cyan-500 rounded-none text-[10px] text-cyan-300 mb-3 uppercase">{t(opt.tagKey, lang)}</div>
-                      <h3 className="text-yellow-400 text-lg font-bold mb-2 group-hover:text-white">{title}</h3>
-                      <p className="text-neutral-400 text-xs leading-relaxed font-mono">{t(opt.descKey, lang)}</p>
+                   <div 
+                     key={i} 
+                     onClick={() => selectUpgrade(opt)}
+                     onTouchStart={(e) => {
+                       e.stopPropagation();
+                       // Add visual feedback for touch
+                       e.currentTarget.style.transform = 'scale(0.95)';
+                       e.currentTarget.style.borderColor = '#fbbf24';
+                     }}
+                     onTouchEnd={(e) => {
+                       e.stopPropagation();
+                       // Reset visual feedback
+                       e.currentTarget.style.transform = '';
+                       e.currentTarget.style.borderColor = '';
+                       // Trigger the upgrade selection
+                       selectUpgrade(opt);
+                     }}
+                     onTouchCancel={(e) => {
+                       e.stopPropagation();
+                       // Reset visual feedback on cancel
+                       e.currentTarget.style.transform = '';
+                       e.currentTarget.style.borderColor = '';
+                     }}
+                     data-ui-element="upgrade-option"
+                     data-clickable="true"
+                     className="w-56 bg-black/80 border border-cyan-700 p-6 cursor-pointer hover:scale-105 hover:border-yellow-400 hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition-all duration-200 relative group clip-path-polygon touch-manipulation select-none"
+                     style={{ touchAction: 'manipulation' }}
+                   >
+                      <div className="inline-block px-2 py-0.5 bg-cyan-900/30 border border-cyan-500 rounded-none text-[10px] text-cyan-300 mb-3 uppercase pointer-events-none">{t(opt.tagKey, lang)}</div>
+                      <h3 className="text-yellow-400 text-lg font-bold mb-2 group-hover:text-white pointer-events-none">{title}</h3>
+                      <p className="text-neutral-400 text-xs leading-relaxed font-mono pointer-events-none">{t(opt.descKey, lang)}</p>
                    </div>
                 );
              })}
@@ -1435,10 +1489,20 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
             </h1>
             <p className="text-cyan-700 tracking-[0.5em] text-sm mb-12 animate-pulse">CYBERNETIC WARFARE SIMULATION V9.0</p>
             
-            <button onClick={startGame} className="w-72 py-4 bg-cyan-900/20 border-2 border-cyan-500 text-cyan-400 text-xl font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-black hover:shadow-[0_0_40px_cyan] transition-all duration-300 skew-x-[-10deg]">
+            <button 
+              onClick={startGame} 
+              className="w-72 py-4 bg-cyan-900/20 border-2 border-cyan-500 text-cyan-400 text-xl font-bold uppercase tracking-widest hover:bg-cyan-500 hover:text-black hover:shadow-[0_0_40px_cyan] transition-all duration-300 skew-x-[-10deg] touch-manipulation"
+              data-ui-element="start-button"
+              style={{ touchAction: 'manipulation' }}
+            >
               {t('btn.start', lang)}
             </button>
-            <button onClick={() => setShowDev(true)} className="mt-6 w-72 py-3 bg-transparent border border-neutral-700 text-neutral-500 text-sm uppercase hover:text-white hover:border-white transition-all skew-x-[-10deg]">
+            <button 
+              onClick={() => setShowDev(true)} 
+              className="mt-6 w-72 py-3 bg-transparent border border-neutral-700 text-neutral-500 text-sm uppercase hover:text-white hover:border-white transition-all skew-x-[-10deg] touch-manipulation"
+              data-ui-element="settings-menu-button"
+              style={{ touchAction: 'manipulation' }}
+            >
               {t('btn.settings', lang)}
             </button>
          </div>
@@ -1450,7 +1514,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
             <div className="text-2xl mb-12 font-mono border-t border-b border-red-900 py-4 w-full text-center bg-red-900/10">
               {t('gameover.time', lang)} <span className="text-white ml-2 drop-shadow-[0_0_10px_white]">{uiState.time}</span>
             </div>
-            <button onClick={startGame} className="w-72 py-4 bg-red-900/20 border-2 border-red-500 text-red-500 text-xl font-bold uppercase tracking-widest hover:bg-red-500 hover:text-black hover:shadow-[0_0_40px_red] transition-all duration-300 skew-x-[-10deg]">
+            <button 
+              onClick={startGame} 
+              className="w-72 py-4 bg-red-900/20 border-2 border-red-500 text-red-500 text-xl font-bold uppercase tracking-widest hover:bg-red-500 hover:text-black hover:shadow-[0_0_40px_red] transition-all duration-300 skew-x-[-10deg] touch-manipulation"
+              data-ui-element="restart-button"
+              style={{ touchAction: 'manipulation' }}
+            >
               {t('btn.restart', lang)}
             </button>
          </div>

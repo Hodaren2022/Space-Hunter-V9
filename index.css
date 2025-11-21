@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles */
+@layer base {
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #050505; /* Deep black */
+    touch-action: none;
+    font-family: 'Orbitron', sans-serif; /* Tech font */
+  }
+}
+
+/* Mobile touch optimization */
+@layer utilities {
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Enhanced touch feedback */
+  .touch-feedback:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* CRT Scanline Overlay */
+@layer components {
+  .crt-overlay::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 9999;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+  }
+  
+  .no-select {
+    @apply select-none;
+  }
+  
+  /* Custom Scrollbar for dev panel */
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: #00f3ff #111;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: #111; 
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: #00f3ff; 
+    border-radius: 4px;
+  }
+}
