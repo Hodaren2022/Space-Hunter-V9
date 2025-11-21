@@ -1268,6 +1268,21 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
     return () => cancelAnimationFrame(requestRef.current!);
   }, [lang]); 
 
+  // Handle settings panel pause/resume
+  useEffect(() => {
+    if (showDev) {
+      // Opening settings - pause if game is running
+      if (gameState.current.isRunning && !gameState.current.isPaused) {
+        gameState.current.isPaused = true;
+      }
+    } else {
+      // Closing settings - resume if game is running
+      if (gameState.current.isRunning) {
+        gameState.current.isPaused = false;
+      }
+    }
+  }, [showDev]);
+
   const updateDevSetting = (key: keyof DevSettings, val: string) => {
      const num = parseFloat(val);
      setDevSettings(prev => {
@@ -1343,7 +1358,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
 
       <div style={{
         position: 'absolute',
-        top: window.innerWidth <= 480 ? '60px' : '10px',
+        top: window.innerWidth <= 480 ? '120px' : '10px',
         right: '10px',
         display: 'flex',
         flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
@@ -1383,13 +1398,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
             alignItems: 'center',
             justifyContent: 'center'
           }}
-          onClick={() => {
-            const wasRunning = gameState.current.isRunning && !gameState.current.isPaused;
-            if (wasRunning) {
-              gameState.current.isPaused = true;
-            }
-            setShowDev(!showDev);
-          }}
+          onClick={() => setShowDev(!showDev)}
         >
           ⚙️
         </button>
@@ -1398,7 +1407,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
       {showDev && (
         <div style={{
           position: 'absolute',
-          top: window.innerWidth <= 480 ? '140px' : '70px',
+          top: window.innerWidth <= 480 ? '200px' : '70px',
           right: '10px',
           left: window.innerWidth <= 480 ? '10px' : 'auto',
           width: window.innerWidth <= 480 ? 'auto' : 'min(320px, 90vw)',
@@ -1407,7 +1416,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
           padding: 'clamp(12px, 3vw, 20px)',
           zIndex: 50,
           fontSize: 'clamp(12px, 2.5vw, 14px)',
-          maxHeight: window.innerWidth <= 480 ? '70vh' : '80vh',
+          maxHeight: window.innerWidth <= 480 ? '60vh' : '80vh',
           overflowY: 'auto',
           color: 'white',
           borderRadius: '8px'
@@ -1426,12 +1435,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                textTransform: 'uppercase',
                letterSpacing: '0.1em'
              }}>設定控制台</h3>
-             <button onClick={() => {
-               setShowDev(false);
-               if (gameState.current.isRunning) {
-                 gameState.current.isPaused = false;
-               }
-             }} style={{
+             <button onClick={() => setShowDev(false)} style={{
                color: '#999',
                backgroundColor: 'transparent',
                border: 'none',
@@ -1678,25 +1682,30 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          padding: 'clamp(10px, 2vw, 20px)',
+          boxSizing: 'border-box'
         }}>
            <h2 style={{
-             fontSize: '36px',
+             fontSize: 'clamp(20px, 5vw, 32px)',
              color: '#00f3ff',
              fontWeight: 'bold',
-             marginBottom: '32px',
+             marginBottom: 'clamp(8px, 2vw, 16px)',
              textTransform: 'uppercase',
              letterSpacing: '0.1em',
-             textShadow: '0 0 20px cyan'
+             textShadow: '0 0 20px cyan',
+             textAlign: 'center',
+             margin: '0 0 clamp(8px, 2vw, 16px) 0'
            }}>升級</h2>
            <div style={{
              display: 'flex',
              flexDirection: 'column',
-             gap: '16px',
+             gap: 'clamp(8px, 1.5vw, 12px)',
              alignItems: 'center',
-             padding: '16px',
-             maxWidth: '90vw',
-             width: '100%'
+             width: '100%',
+             maxWidth: '95vw',
+             flex: '1',
+             justifyContent: 'center'
            }}>
              {upgradeOptions.map((opt, i) => {
                 // Dynamic translation of title based on type
@@ -1714,17 +1723,21 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                         className="upgrade-option"
                         style={{
                           width: '100%',
-                          maxWidth: '400px',
+                          maxWidth: 'min(380px, 90vw)',
                           background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 136, 170, 0.1) 100%)',
                           border: '2px solid #0088aa',
-                          borderRadius: '8px',
-                          padding: '20px',
+                          borderRadius: '6px',
+                          padding: 'clamp(8px, 2vw, 16px)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                           position: 'relative',
                           touchAction: 'manipulation',
-                          minHeight: '120px',
-                          boxShadow: '0 4px 12px rgba(0, 136, 170, 0.2)'
+                          minHeight: 'clamp(70px, 12vh, 90px)',
+                          maxHeight: 'clamp(90px, 18vh, 120px)',
+                          boxShadow: '0 2px 8px rgba(0, 136, 170, 0.2)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center'
                         }}
                         data-upgrade={i}
                         onMouseEnter={(e) => {
@@ -1739,31 +1752,36 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                         }}>
                       <div style={{
                         display: 'inline-block',
-                        padding: '4px 12px',
+                        padding: 'clamp(3px, 1.3vw, 5px) clamp(8px, 2.6vw, 13px)',
                         backgroundColor: 'rgba(0, 136, 170, 0.3)',
                         border: '1px solid #00f3ff',
-                        borderRadius: '4px',
-                        fontSize: '11px',
+                        borderRadius: '3px',
+                        fontSize: 'clamp(12px, 2.6vw, 14px)',
                         color: '#00cccc',
-                        marginBottom: '12px',
+                        marginBottom: 'clamp(5px, 1.3vw, 10px)',
                         textTransform: 'uppercase',
                         fontWeight: 'bold'
                       }}>{t(opt.tagKey, lang)}</div>
                       <h3 style={{
                         color: '#ffaa00',
-                        fontSize: '20px',
+                        fontSize: 'clamp(18px, 4.5vw, 23px)',
                         fontWeight: 'bold',
-                        marginBottom: '8px',
+                        marginBottom: 'clamp(3px, 0.7vw, 5px)',
                         textShadow: '0 0 10px rgba(255, 170, 0, 0.5)',
-                        letterSpacing: '0.5px'
+                        letterSpacing: '0.3px',
+                        lineHeight: '1.1',
+                        margin: '0 0 clamp(3px, 0.7vw, 5px) 0'
                       }}>{title}</h3>
                       <p style={{
                         color: '#cccccc',
-                        fontSize: '14px',
-                        lineHeight: '1.4',
+                        fontSize: 'clamp(13px, 2.6vw, 16px)',
+                        lineHeight: '1.2',
                         fontFamily: 'monospace',
                         opacity: 0.9,
-                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
+                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
+                        margin: 0,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
                       }}>{t(opt.descKey, lang)}</p>
                    </div>
                 );
