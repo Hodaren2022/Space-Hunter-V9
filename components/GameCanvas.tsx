@@ -255,7 +255,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
     // 0. Regen
     player.hp = Math.min(player.maxHp, player.hp + player.stats.hpRegen);
 
-    // 1. Camera
+    // 1. Camera - Center on player
     state.camX = player.x - canvasWidth / 2 + (Math.random() - 0.5) * state.glitchOffset;
     state.camY = player.y - canvasHeight / 2 + (Math.random() - 0.5) * state.glitchOffset;
     state.camX = Math.max(0, Math.min(WORLD_WIDTH - canvasWidth, state.camX));
@@ -1341,54 +1341,76 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
         opacity: 0.5
       }}></div>
 
-      <button 
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          border: '1px solid #00f3ff',
-          color: '#00f3ff',
-          padding: '8px 16px',
-          zIndex: 50,
-          cursor: 'pointer'
-        }}
-        onClick={() => setShowDev(!showDev)}
-      >
-        ⚙️
-      </button>
-
-      <button 
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '100px',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          border: '1px solid #666',
-          color: '#999',
-          padding: '8px 16px',
-          zIndex: 50,
-          cursor: 'pointer'
-        }}
-        onClick={toggleMute}
-      >
-        {isMuted ? '🔇' : '🔊'}
-      </button>
+      <div style={{
+        position: 'absolute',
+        top: window.innerWidth <= 480 ? '60px' : '10px',
+        right: '10px',
+        display: 'flex',
+        flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
+        gap: '8px',
+        zIndex: 50
+      }}>
+        <button 
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            border: '1px solid #666',
+            color: '#999',
+            padding: 'clamp(6px, 2vw, 8px) clamp(8px, 3vw, 16px)',
+            cursor: 'pointer',
+            fontSize: 'clamp(12px, 3vw, 16px)',
+            minWidth: '40px',
+            minHeight: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          onClick={toggleMute}
+        >
+          {isMuted ? '🔇' : '🔊'}
+        </button>
+        
+        <button 
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            border: '1px solid #00f3ff',
+            color: '#00f3ff',
+            padding: 'clamp(6px, 2vw, 8px) clamp(8px, 3vw, 16px)',
+            cursor: 'pointer',
+            fontSize: 'clamp(12px, 3vw, 16px)',
+            minWidth: '40px',
+            minHeight: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          onClick={() => {
+            const wasRunning = gameState.current.isRunning && !gameState.current.isPaused;
+            if (wasRunning) {
+              gameState.current.isPaused = true;
+            }
+            setShowDev(!showDev);
+          }}
+        >
+          ⚙️
+        </button>
+      </div>
 
       {showDev && (
         <div style={{
           position: 'absolute',
-          top: '80px',
-          right: '20px',
-          width: '320px',
-          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          top: window.innerWidth <= 480 ? '140px' : '70px',
+          right: '10px',
+          left: window.innerWidth <= 480 ? '10px' : 'auto',
+          width: window.innerWidth <= 480 ? 'auto' : 'min(320px, 90vw)',
+          backgroundColor: 'rgba(0, 0, 0, 0.95)',
           border: '1px solid #00f3ff',
-          padding: '24px',
+          padding: 'clamp(12px, 3vw, 20px)',
           zIndex: 50,
-          fontSize: '14px',
-          maxHeight: '80vh',
+          fontSize: 'clamp(12px, 2.5vw, 14px)',
+          maxHeight: window.innerWidth <= 480 ? '70vh' : '80vh',
           overflowY: 'auto',
-          color: 'white'
+          color: 'white',
+          borderRadius: '8px'
         }}>
           <div style={{
             display: 'flex',
@@ -1404,7 +1426,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                textTransform: 'uppercase',
                letterSpacing: '0.1em'
              }}>設定控制台</h3>
-             <button onClick={() => setShowDev(false)} style={{
+             <button onClick={() => {
+               setShowDev(false);
+               if (gameState.current.isRunning) {
+                 gameState.current.isPaused = false;
+               }
+             }} style={{
                color: '#999',
                backgroundColor: 'transparent',
                border: 'none',
@@ -1532,7 +1559,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
           top: 0,
           left: 0,
           width: '100%',
-          padding: '20px',
+          padding: 'clamp(10px, 3vw, 20px)',
           display: 'flex',
           justifyContent: 'space-between',
           pointerEvents: 'none',
@@ -1542,8 +1569,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
         }}>
            {/* HP Bar - Left Side */}
            <div style={{ 
-             width: '200px',
-             maxWidth: '25vw'
+             width: 'clamp(120px, 35vw, 200px)',
+             maxWidth: '45vw',
+             minWidth: '120px'
            }}>
              <div style={{
                color: '#00f3ff',
@@ -1551,7 +1579,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                marginBottom: '4px',
                display: 'flex',
                justifyContent: 'space-between',
-               fontSize: '14px'
+               fontSize: 'clamp(12px, 2.5vw, 14px)'
              }}>
                 <span>HP</span>
                 <span style={{ fontFamily: 'monospace' }}>{Math.ceil(uiState.hp)}/{Math.ceil(uiState.maxHp)}</span>
@@ -1567,7 +1595,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                 <div style={{
                   height: '100%',
                   background: 'linear-gradient(to right, #dc2626, #ef4444)',
-                  transition: 'all 0.2s',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   width: `${(uiState.hp / uiState.maxHp) * 100}%`,
                   boxShadow: '0 0 10px red'
                 }} />
@@ -1576,8 +1604,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
 
            {/* EXP and Time - Right Side */}
            <div style={{ 
-             width: '200px',
-             maxWidth: '25vw',
+             width: 'clamp(120px, 35vw, 200px)',
+             maxWidth: '45vw',
+             minWidth: '120px',
              textAlign: 'right'
            }}>
              <div style={{
@@ -1586,10 +1615,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                marginBottom: '4px',
                display: 'flex',
                justifyContent: 'space-between',
-               fontSize: '14px'
+               fontSize: 'clamp(12px, 2.5vw, 14px)'
              }}>
                  <span style={{ fontFamily: 'monospace' }}>LV.{uiState.level}</span>
-                 <span style={{ fontSize: '10px' }}>EXP</span>
+                 <span style={{ fontSize: 'clamp(8px, 2vw, 10px)' }}>EXP</span>
              </div>
              <div style={{
                width: '100%',
@@ -1608,7 +1637,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                 }} />
              </div>
              <div style={{
-               fontSize: '24px',
+               fontSize: 'clamp(18px, 4vw, 24px)',
                fontWeight: 'bold',
                fontFamily: 'monospace',
                color: 'white',
@@ -1645,7 +1674,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
           right: 0,
           bottom: 0,
           backgroundColor: 'rgba(0, 0, 0, 0.9)',
-          zIndex: 40,
+          zIndex: 9000,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -1662,10 +1691,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
            }}>升級</h2>
            <div style={{
              display: 'flex',
-             flexWrap: 'wrap',
-             gap: '24px',
-             justifyContent: 'center',
-             padding: '16px'
+             flexDirection: 'column',
+             gap: '16px',
+             alignItems: 'center',
+             padding: '16px',
+             maxWidth: '90vw',
+             width: '100%'
            }}>
              {upgradeOptions.map((opt, i) => {
                 // Dynamic translation of title based on type
@@ -1680,50 +1711,60 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
                 
                 return (
                    <div key={i} onClick={() => selectUpgrade(opt)} 
+                        className="upgrade-option"
                         style={{
-                          width: '224px',
-                          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                          border: '1px solid #0088aa',
-                          padding: '24px',
+                          width: '100%',
+                          maxWidth: '400px',
+                          background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 136, 170, 0.1) 100%)',
+                          border: '2px solid #0088aa',
+                          borderRadius: '8px',
+                          padding: '20px',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                           position: 'relative',
                           touchAction: 'manipulation',
-                          minHeight: '140px'
+                          minHeight: '120px',
+                          boxShadow: '0 4px 12px rgba(0, 136, 170, 0.2)'
                         }}
                         data-upgrade={i}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.05)';
+                          e.currentTarget.style.transform = 'scale(1.02)';
                           e.currentTarget.style.borderColor = '#ffaa00';
-                          e.currentTarget.style.boxShadow = '0 0 30px rgba(255, 170, 0, 0.4)';
+                          e.currentTarget.style.boxShadow = '0 8px 24px rgba(255, 170, 0, 0.3)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = 'scale(1)';
                           e.currentTarget.style.borderColor = '#0088aa';
-                          e.currentTarget.style.boxShadow = 'none';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 136, 170, 0.2)';
                         }}>
                       <div style={{
                         display: 'inline-block',
-                        padding: '2px 8px',
+                        padding: '4px 12px',
                         backgroundColor: 'rgba(0, 136, 170, 0.3)',
                         border: '1px solid #00f3ff',
-                        fontSize: '10px',
+                        borderRadius: '4px',
+                        fontSize: '11px',
                         color: '#00cccc',
                         marginBottom: '12px',
-                        textTransform: 'uppercase'
-                      }}>標籤</div>
+                        textTransform: 'uppercase',
+                        fontWeight: 'bold'
+                      }}>{t(opt.tagKey, lang)}</div>
                       <h3 style={{
                         color: '#ffaa00',
-                        fontSize: '18px',
+                        fontSize: '20px',
                         fontWeight: 'bold',
-                        marginBottom: '8px'
+                        marginBottom: '8px',
+                        textShadow: '0 0 10px rgba(255, 170, 0, 0.5)',
+                        letterSpacing: '0.5px'
                       }}>{title}</h3>
                       <p style={{
-                        color: '#999',
-                        fontSize: '12px',
+                        color: '#cccccc',
+                        fontSize: '14px',
                         lineHeight: '1.4',
-                        fontFamily: 'monospace'
-                      }}>描述</p>
+                        fontFamily: 'monospace',
+                        opacity: 0.9,
+                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
+                      }}>{t(opt.descKey, lang)}</p>
                    </div>
                 );
              })}
@@ -1739,37 +1780,41 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
            width: '100vw',
            height: '100vh',
            backgroundColor: '#000000',
-           zIndex: 9999,
+           zIndex: 10000,
            display: 'flex',
            flexDirection: 'column',
            alignItems: 'center',
            justifyContent: 'center',
-           color: 'white'
+           color: 'white',
+           padding: '20px',
+           boxSizing: 'border-box'
          }}>
             
             <h1 style={{
-              fontSize: '4rem',
+              fontSize: 'clamp(2rem, 8vw, 4rem)',
               fontWeight: 'bold',
               color: '#00f3ff',
               marginBottom: '2rem',
-              textAlign: 'center'
+              textAlign: 'center',
+              lineHeight: '1.2'
             }}>
               太空獵手 Space Hunter
             </h1>
             <p style={{
               color: '#0088aa',
               marginBottom: '3rem',
-              fontSize: '0.9rem',
-              letterSpacing: '0.3em'
+              fontSize: 'clamp(0.7rem, 2vw, 0.9rem)',
+    letterSpacing: '0.3em',
+              textAlign: 'center'
             }}>CYBERNETIC WARFARE SIMULATION V9.0</p>
             
             <button onClick={startGame} style={{
-              width: '300px',
+              width: 'min(300px, 80vw)',
               padding: '16px 32px',
               backgroundColor: 'rgba(0, 243, 255, 0.1)',
               border: '2px solid #00f3ff',
               color: '#00f3ff',
-              fontSize: '1.2rem',
+              fontSize: 'clamp(1rem, 3vw, 1.2rem)',
               fontWeight: 'bold',
               cursor: 'pointer',
               marginBottom: '16px'
@@ -1777,12 +1822,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
               開始遊戲
             </button>
             <button onClick={() => setShowDev(true)} style={{
-              width: '300px',
+              width: 'min(300px, 80vw)',
               padding: '12px 24px',
               backgroundColor: 'transparent',
               border: '1px solid #666',
               color: '#999',
-              fontSize: '0.9rem',
+              fontSize: 'clamp(0.8rem, 2.5vw, 0.9rem)',
               cursor: 'pointer'
             }}>
               設定
@@ -1798,42 +1843,46 @@ export const GameCanvas: React.FC<GameCanvasProps> = () => {
            right: 0,
            bottom: 0,
            backgroundColor: 'rgba(0, 0, 0, 0.95)',
-           zIndex: 30,
+           zIndex: 9500,
            display: 'flex',
            flexDirection: 'column',
            alignItems: 'center',
            justifyContent: 'center',
-           color: 'white'
+           color: 'white',
+           padding: '20px',
+           boxSizing: 'border-box'
          }}>
             <h1 style={{
-              fontSize: '60px',
+              fontSize: 'clamp(2.5rem, 10vw, 60px)',
               fontWeight: 'black',
               color: '#dc2626',
               marginBottom: '16px',
               textShadow: '0 0 30px red',
               letterSpacing: '0.1em',
-              textTransform: 'uppercase'
+              textTransform: 'uppercase',
+              textAlign: 'center'
             }}>遊戲結束</h1>
             <div style={{
-              fontSize: '24px',
+              fontSize: 'clamp(1rem, 4vw, 24px)',
               marginBottom: '48px',
               fontFamily: 'monospace',
               borderTop: '1px solid #7f1d1d',
               borderBottom: '1px solid #7f1d1d',
               padding: '16px 0',
               width: '100%',
+              maxWidth: '400px',
               textAlign: 'center',
               backgroundColor: 'rgba(127, 29, 29, 0.1)'
             }}>
               時間: <span style={{ color: 'white', marginLeft: '8px', textShadow: '0 0 10px white' }}>{uiState.time}</span>
             </div>
             <button onClick={startGame} style={{
-              width: '288px',
+              width: 'min(288px, 80vw)',
               padding: '16px',
               backgroundColor: 'rgba(127, 29, 29, 0.2)',
               border: '2px solid #ef4444',
               color: '#ef4444',
-              fontSize: '20px',
+              fontSize: 'clamp(1rem, 3vw, 20px)',
               fontWeight: 'bold',
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
